@@ -48,6 +48,14 @@ frontend/src/api, stores, types, constants, constructors, components/common, hoo
 - 数据库使用命名卷，避免绑定中文路径。
 - 常见问题：端口占用时修改 `.env` 中端口后重启；需要重置数据时执行 `docker compose down -v`。
 
+## 时间轴编排规则
+
+- 轨道 Cue 块可水平拖动调整 `start_ms`（吸附 100ms），拖动中预览即时重算；锁定轨道（🔒）拒绝拖动，但其场景控制仍参与预览混算。
+- 播放头停在任意时刻时，每盏灯独立解析：取仍覆盖此刻且保持时间未走完的候选中**优先级最高**的场景值；优先级相同时**层号较小**的轨道胜出。
+- 场景在轨道上的实际控制窗口为 `淡入 + 保持`；保持时间走完后轨道若仍覆盖此刻，灯具回落到其他仍覆盖的场景值，无覆盖则熄灭。
+- 淡入中的场景在下层（回退）状态上线性插值；Cue 块内三段依次表示淡入、保持、已释放（回落）区间。
+- 混算逻辑集中在 `frontend/src/utils/timelineMixer.ts`，播放头驱动在 `frontend/src/hooks/useTimelinePlayback.ts`。
+
 ## 枚举/常量出现位置清单
 
 - FixtureType: constants/FixtureType、types/FixtureType、constructors、logTemplates、errorMessages、筛选器、展示组件/控制器均有引用。
